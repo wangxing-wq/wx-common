@@ -14,6 +14,8 @@ public class BizException extends RuntimeException implements Serializable, Stat
 	protected static final long serialVersionUID = 8935197089745865786L;
 	protected final String code;
 	
+	protected Throwable cause;
+	
 	public BizException() {
 		this(ResponseCodeEnum.FAIL);
 	}
@@ -34,6 +36,16 @@ public class BizException extends RuntimeException implements Serializable, Stat
 	public Throwable getTarget(){
 		return super.getCause();
 	}
+	
+	public Throwable getRootCause(){
+		if (cause != null){
+			return cause;
+		}
+		Throwable supperCause = super.getCause();
+		for (cause = supperCause;cause.getCause() != null;cause = cause.getCause()){};
+		return supperCause;
+	}
+	
 	
 	@Override
 	public String getCode() {

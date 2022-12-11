@@ -3,7 +3,6 @@ package com.wx.web;
 import com.wx.enums.ResponseCodeEnum;
 import com.wx.inter.StateCode;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +18,8 @@ import java.util.Map;
  */
 public class Result extends HashMap<String, Object>{
 
+	private static final Object [] DATA_EMPTY = {};
+	
 	private Result(String code, String message, Map<String, Object> data) {
 		this.put("code", code);
 		this.put("message", message);
@@ -41,15 +42,17 @@ public class Result extends HashMap<String, Object>{
 		return define(status, data);
 	}
 
-	public static Result define(StateCode status, Object... data) {
+	public static Result define(StateCode status, Object ... data) {
+		if (status == null){
+			status = ResponseCodeEnum.FAIL;
+		}
+		if (data == null){
+			data = DATA_EMPTY;
+		}
 		int length = data.length >> 2;
 		if (length >> 1 == 1 && data.length != 1) {
 			// 这个不是常规意义上的错误,要抛出异常
-			throw new RuntimeException(MessageFormat.format("K V 对无效,数据[0] 无匹配,", data[data.length - 1]));
-		}
-		if (status == null || status.getCode() == null) {
-			// 抛出异常
-			throw new RuntimeException("status and code can't be null");
+			throw new IllegalArgumentException("K V 对无效,键值对不匹配,请检查");
 		}
  		Map<String, Object> map = new HashMap<>(length);
 		if (data.length == 1){
@@ -60,10 +63,6 @@ public class Result extends HashMap<String, Object>{
 			}
 		}
 		return new Result(status.getCode(), status.getMessage(), map);
-	}
-
-	public static void main(String[] args) {
-		System.out.println(Result.fail("K","V"));
 	}
 
 	public String getCode() {

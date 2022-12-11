@@ -1,6 +1,9 @@
 package com.wx.util;
 
 import com.wx.inter.StateCode;
+import com.wx.web.Result;
+
+import static com.wx.util.ExceptionHolder.*;
 
 /**
  * @author 22343
@@ -10,19 +13,26 @@ public class Test {
 	
 	public static void main(String[] args) {
 		Console.log("test {},{}", "wx");
-		ExceptionHolder.instance().isTrue(false,new StateCode() {
-			
+		process();
+		Result result = instance().processResult();
+		Console.log("{}",result);
+	//	lease
+	}
+	
+	public static void process(){
+		instance().fail().fail(new StateCode() {
 			@Override
 			public String getCode() {
-				return "10001";
+				return "自定义Code";
 			}
 			
 			@Override
 			public String getMessage() {
-				return "测试失败";
+				return "自定义消息";
 			}
 		});
-		System.out.println(ExceptionHolder.instance().processResult());
 	}
+	
+	
 	
 }
